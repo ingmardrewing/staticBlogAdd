@@ -11,6 +11,7 @@ import (
 
 	"github.com/ingmardrewing/fs"
 	"github.com/ingmardrewing/staticPersistence"
+	"github.com/ingmardrewing/staticUtil"
 )
 
 func TestMain(m *testing.M) {
@@ -31,7 +32,7 @@ func getTestFileDirPath() string {
 }
 
 func TestGenerateDatePath(t *testing.T) {
-	actual := generateDatePath()
+	actual := staticUtil.GenerateDatePath()
 	now := time.Now()
 	expected := fmt.Sprintf("%d/%d/%d/", now.Year(), now.Month(), now.Day())
 
@@ -114,10 +115,10 @@ func TestWriteData(t *testing.T) {
 	"content":"<a href=\"https://drewing.de/just/another/path/TestImage.png\"><img src=\"https://drewing.de/just/another/path/TestImage-w800.png\" width=\"800\"></a><p>This is a Test</p>",
 	"dsq_thread_id":"%s"
 }`
-	dp := generateDatePath()
+	dp := staticUtil.GenerateDatePath()
 	dsq := fmt.Sprintf("%d %s%s", 1000000+dto.Id(), domain, dp+dto.TitlePlain())
 	url := fmt.Sprintf("https://drewing.de/blog/%stest-image/", dp)
-	expected := fmt.Sprintf(tpl, getDate(), url, dsq)
+	expected := fmt.Sprintf(tpl, staticUtil.GetDate(), url, dsq)
 
 	if data != expected {
 		t.Error("Expected", expected, "but got", data)
