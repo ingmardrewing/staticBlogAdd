@@ -50,19 +50,22 @@ func (b *BlogDataAbstractor) GeneratePostDto() staticIntf.PageDto {
 	content := imgHtml + mdContent
 	date := staticUtil.GetDate()
 
-	dto := staticPersistence.NewDto()
-	dto.Title(title)
-	dto.TitlePlain(titlePlain)
-	dto.ThumbUrl(thumbUrl)
-	dto.ImageUrl(imgUrl)
-	dto.Content(content)
-	dto.Description(excerpt)
-	dto.HtmlFilename(htmlFilename)
-	dto.Url(url)
-	dto.CreateDate(date)
-	dto.DisqusId(disqId)
-	dto.Id(id)
-	return dto
+	return staticPersistence.NewFilledDto(
+		0,
+		title,
+		titlePlain,
+		thumbUrl,
+		imgUrl,
+		content,
+		excerpt,
+		disqId,
+		date,
+		url,
+		b.domain,
+		"",
+		"",
+		htmlFilename,
+		"")
 }
 
 func (b *BlogDataAbstractor) generateDisqusId(id int, titlePlain string) string {
