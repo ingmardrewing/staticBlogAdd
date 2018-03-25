@@ -10,9 +10,9 @@ import (
 	"strings"
 
 	"github.com/ingmardrewing/fs"
-	"github.com/ingmardrewing/staticController"
 	"github.com/ingmardrewing/staticIntf"
 	"github.com/ingmardrewing/staticPersistence"
+	"github.com/ingmardrewing/staticUtil"
 
 	"gopkg.in/russross/blackfriday.v2"
 )
@@ -48,7 +48,7 @@ func (b *BlogDataAbstractor) GeneratePostDto() staticIntf.PageDto {
 	id := b.getId()
 	disqId := b.generateDisqusId(id, titlePlain)
 	content := imgHtml + mdContent
-	date := staticController.GetDate()
+	date := staticUtil.GetDate()
 
 	dto := staticPersistence.NewDto()
 	dto.Title(title)
@@ -66,11 +66,11 @@ func (b *BlogDataAbstractor) GeneratePostDto() staticIntf.PageDto {
 }
 
 func (b *BlogDataAbstractor) generateDisqusId(id int, titlePlain string) string {
-	return fmt.Sprintf("%d %s%s", 1000000+id, b.domain, staticController.GenerateDatePath()+titlePlain)
+	return fmt.Sprintf("%d %s%s", 1000000+id, b.domain, staticUtil.GenerateDatePath()+titlePlain)
 }
 
 func (b *BlogDataAbstractor) generateUrl(titlePlain string) string {
-	return b.domain + staticController.GenerateDatePath() + titlePlain + "/"
+	return b.domain + staticUtil.GenerateDatePath() + titlePlain + "/"
 }
 
 func (b *BlogDataAbstractor) getId() int {

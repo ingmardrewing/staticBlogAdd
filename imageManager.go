@@ -8,7 +8,7 @@ import (
 	"github.com/ingmardrewing/aws"
 	"github.com/ingmardrewing/fs"
 	"github.com/ingmardrewing/img"
-	"github.com/ingmardrewing/staticController"
+	"github.com/ingmardrewing/staticUtil"
 )
 
 func main() {
@@ -58,7 +58,7 @@ func (i *ImageManager) UploadImages() {
 }
 
 func (i *ImageManager) getS3Key(filename string) string {
-	return "blog/" + staticController.GenerateDatePath() + filename
+	return "blog/" + staticUtil.GenerateDatePath() + filename
 }
 
 func (i *ImageManager) GetImageUrls() []string {
