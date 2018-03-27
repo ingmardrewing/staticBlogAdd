@@ -51,15 +51,15 @@ func (b *BlogDataAbstractor) GeneratePostDto() staticIntf.PageDto {
 	date := staticUtil.GetDate()
 
 	return staticPersistence.NewFilledDto(
-		0,
+		id,
 		title,
 		titlePlain,
 		thumbUrl,
 		imgUrl,
-		content,
 		excerpt,
 		disqId,
 		date,
+		content,
 		url,
 		b.domain,
 		"",
