@@ -1,0 +1,12 @@
+{
+  "version":"1",
+  "id":20,
+  "path":"/blog/",
+  "filename":"booklist.html",
+  "createDate": "01.01.2007",
+  "url":"http://localhost",
+  "title":"booklist",
+  "title_plain":"booklist",
+  "description":"test booklist description",
+  "content":"test booklist content"
+}

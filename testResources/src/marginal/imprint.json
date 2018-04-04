@@ -1,0 +1,12 @@
+{
+  "version":"1",
+  "id":30,
+  "path":"/blog/",
+  "filename":"imprint.html",
+  "createDate": "01.01.2007",
+  "url":"http://localhost",
+  "title":"imprint",
+  "title_plain":"imprint",
+  "description":"test imprint description",
+  "content":"test imprint content"
+}
