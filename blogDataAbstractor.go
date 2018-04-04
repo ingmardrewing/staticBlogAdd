@@ -49,6 +49,7 @@ func (b *BlogDataAbstractor) GeneratePostDto() staticIntf.PageDto {
 	disqId := b.generateDisqusId(id, titlePlain)
 	content := imgHtml + mdContent
 	date := staticUtil.GetDate()
+	category := "blog post"
 
 	return staticPersistence.NewFilledDto(
 		id,
@@ -65,7 +66,8 @@ func (b *BlogDataAbstractor) GeneratePostDto() staticIntf.PageDto {
 		"",
 		"",
 		htmlFilename,
-		"")
+		"",
+		category)
 }
 
 func (b *BlogDataAbstractor) generateDisqusId(id int, titlePlain string) string {

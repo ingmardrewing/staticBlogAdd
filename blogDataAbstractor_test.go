@@ -98,7 +98,7 @@ func TestWriteData(t *testing.T) {
 
 	filename := fmt.Sprintf("page%d.json", dto.Id())
 
-	staticPersistence.WritePostDtoToJson(dto, postsDir, filename)
+	staticPersistence.WritePageDtoToJson(dto, postsDir, filename)
 
 	data := fs.ReadFileAsString(path.Join(postsDir, filename))
 	tpl := `{
