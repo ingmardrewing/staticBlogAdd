@@ -22,7 +22,7 @@ func TestMain(m *testing.M) {
 }
 func tearDown() {
 	p := path.Join(getTestFileDirPath(), "testResources/src/posts/")
-	fs.RemoveFile(p, "page342.json")
+	fs.RemoveFile(p, "page358.json")
 	//	fs.RemoveFile(p, "TestImage-w800.png")
 }
 
@@ -58,13 +58,13 @@ func TestBlogDataAbstractor(t *testing.T) {
 	}
 
 	actual = dto.Content()
-	expected = `<a href=\"https://drewing.de/just/another/path/TestImage.png\"><img src=\"https://drewing.de/just/another/path/TestImage-w800.png\" width=\"800\"></a><p>This is a Test</p>`
+	expected = `<a href=\"https://drewing.de/just/another/path/TestImage.png\"><img src=\"https://drewing.de/just/another/path/TestImage-w800.png\" width=\"800\"></a>`
 	if actual != expected {
 		t.Error("Expected", expected, "but got", actual)
 	}
 
 	actual = dto.Description()
-	expected = `This is a Test`
+	expected = "A blog containing texts, drawings, graphic narratives/novels and (rarely) code snippets by Ingmar Drewing."
 
 	if actual != expected {
 		t.Error("Expected", expected, "but got", actual)
@@ -79,7 +79,7 @@ func TestBlogDataAbstractor(t *testing.T) {
 	}
 
 	actualInt := dto.Id()
-	expectedInt := 342
+	expectedInt := 358
 
 	if actualInt != expectedInt {
 		t.Errorf("Expected %d, but got %d\n", expectedInt, actualInt)
@@ -98,7 +98,7 @@ func TestWriteData(t *testing.T) {
 
 	filename := fmt.Sprintf("page%d.json", dto.Id())
 
-	staticPersistence.WritePostDtoToJson(dto, postsDir, filename)
+	staticPersistence.WritePageDtoToJson(dto, postsDir, filename)
 
 	data := fs.ReadFileAsString(path.Join(postsDir, filename))
 	tpl := `{
@@ -106,19 +106,21 @@ func TestWriteData(t *testing.T) {
 	"thumbImg":"https://drewing.de/just/another/path/TestImage-w390.png",
 	"postImg":"https://drewing.de/just/another/path/TestImage-w800.png",
 	"filename":"index.html",
-	"id":342,
+	"id":358,
 	"date":"%s",
 	"url":"%s",
 	"title":"Test Image",
 	"title_plain":"test-image",
-	"excerpt":"This is a Test",
-	"content":"<a href=\"https://drewing.de/just/another/path/TestImage.png\"><img src=\"https://drewing.de/just/another/path/TestImage-w800.png\" width=\"800\"></a><p>This is a Test</p>",
-	"dsq_thread_id":"%s"
+	"excerpt":"A blog containing texts, drawings, graphic narratives/novels and (rarely) code snippets by Ingmar Drewing.",
+	"content":"<a href=\"https://drewing.de/just/another/path/TestImage.png\"><img src=\"https://drewing.de/just/another/path/TestImage-w800.png\" width=\"800\"></a>",
+	"dsq_thread_id":"%s",
+	"thumbBase64":"%s",
+	"category":"%s"
 }`
 	dp := staticUtil.GenerateDatePath()
 	dsq := fmt.Sprintf("%d %s%s", 1000000+dto.Id(), domain, dp+dto.TitlePlain())
 	url := fmt.Sprintf("https://drewing.de/blog/%stest-image/", dp)
-	expected := fmt.Sprintf(tpl, staticUtil.GetDate(), url, dsq)
+	expected := fmt.Sprintf(tpl, staticUtil.GetDate(), url, dsq, "", "blog post")
 
 	if data != expected {
 		t.Error("Expected", expected, "but got", data)

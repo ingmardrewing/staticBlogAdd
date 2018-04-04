@@ -1,0 +1,16 @@
+{
+	"version":1,
+	"thumbImg":"https://drewing.de/just/another/path/TestImage-w390.png",
+	"postImg":"https://drewing.de/just/another/path/TestImage-w800.png",
+	"filename":"index.html",
+	"id":356,
+	"date":"2018-4-4 21:11:4",
+	"url":"https://drewing.de/blog/2018/4/4/test-image/",
+	"title":"Test Image",
+	"title_plain":"test-image",
+	"excerpt":"A blog containing texts, drawings, graphic narratives/novels and (rarely) code snippets by Ingmar Drewing.",
+	"content":"<a href=\"https://drewing.de/just/another/path/TestImage.png\"><img src=\"https://drewing.de/just/another/path/TestImage-w800.png\" width=\"800\"></a>",
+	"dsq_thread_id":"1000356 https://drewing.de/blog/2018/4/4/test-image"
+	"thumbBase64":""
+	"category":"blog post"
+}
