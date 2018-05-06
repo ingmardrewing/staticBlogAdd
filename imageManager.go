@@ -42,7 +42,7 @@ type ImageManager struct {
 
 func (i *ImageManager) PrepareImages() {
 	imgdir := fs.GetPathWithoutFilename(i.sourceimagepath)
-	img := img.NewImg(i.sourceimagepath, imgdir)
+	img := img.NewImgScaler(i.sourceimagepath, imgdir)
 	paths := img.PrepareResizeTo(i.imagesizes...)
 	i.uploadimgagepaths = append(paths, i.sourceimagepath)
 	img.Resize()
