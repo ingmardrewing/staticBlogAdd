@@ -12,8 +12,8 @@ import (
 
 var doUpload = true
 
-func DontUpload() {
-	doUpload = false
+func DoUpload(val bool) {
+	doUpload = val
 }
 
 type ImgManager interface {
@@ -66,6 +66,9 @@ func (i *ImageManager) getS3Key(filename string) string {
 }
 
 func (i *ImageManager) GetImageUrls() []string {
+	if !doUpload {
+		return i.uploadimgagepaths
+	}
 	return i.awsimageurls
 }
 

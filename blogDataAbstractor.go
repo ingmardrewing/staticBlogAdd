@@ -80,6 +80,9 @@ func (b *BlogDataAbstractor) generateUrl(titlePlain string) string {
 
 func (b *BlogDataAbstractor) getId() int {
 	postJsons := fs.ReadDirEntries(b.postsDir, false)
+	if len(postJsons) == 0 {
+		return 0
+	}
 	sort.Strings(postJsons)
 	lastFile := postJsons[len(postJsons)-1]
 	rx := regexp.MustCompile("(\\d+)")
