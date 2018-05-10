@@ -1,7 +1,6 @@
 package staticBlogAdd
 
 import (
-	"fmt"
 	"strconv"
 	"strings"
 
@@ -11,8 +10,10 @@ import (
 	"github.com/ingmardrewing/staticUtil"
 )
 
-func main() {
-	fmt.Println("vim-go")
+var doUpload = true
+
+func DoUpload(val bool) {
+	doUpload = val
 }
 
 type ImgManager interface {
@@ -49,6 +50,9 @@ func (i *ImageManager) PrepareImages() {
 }
 
 func (i *ImageManager) UploadImages() {
+	if !doUpload {
+		return
+	}
 	for _, filepath := range i.uploadimgagepaths {
 		filename := fs.GetFilenameFromPath(filepath)
 		key := i.getS3Key(filename)
@@ -62,6 +66,9 @@ func (i *ImageManager) getS3Key(filename string) string {
 }
 
 func (i *ImageManager) GetImageUrls() []string {
+	if !doUpload {
+		return i.uploadimgagepaths
+	}
 	return i.awsimageurls
 }
 
