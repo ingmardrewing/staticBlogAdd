@@ -41,7 +41,8 @@ type BlogDataAbstractor struct {
 
 func (b *BlogDataAbstractor) GeneratePostDto() staticIntf.PageDto {
 	htmlFilename := "index.html"
-	title, titlePlain := b.inferBlogTitleFromFilename()
+	imageFileName := b.findImageFileInAddDir()
+	title, titlePlain := b.inferBlogTitleFromFilename(imageFileName)
 	thumbUrl, imgUrl, imgHtml := b.prepareImages()
 	mdContent, excerpt := b.readMdData()
 	url := b.generateUrl(titlePlain)
@@ -149,17 +150,32 @@ func (b *BlogDataAbstractor) findImageFileInAddDir() string {
 	return ""
 }
 
-func (b *BlogDataAbstractor) inferBlogTitleFromFilename() (string, string) {
-	filename := b.findImageFileInAddDir()
+func (b *BlogDataAbstractor) inferBlogTitleFromFilename(filename string) (string, string) {
 	fname := strings.TrimSuffix(filename, filepath.Ext(filename))
 	return b.inferBlogTitle(fname), b.inferBlogTitlePlain(fname)
 }
 
 func (b *BlogDataAbstractor) inferBlogTitle(filename string) string {
-	rx := regexp.MustCompile("(^[a-zäüöß]+)|([A-ZÄÜÖ][a-zäüöß,]*)|([0-9,]+)")
-	parts := rx.FindAllString(filename, -1)
+	//rx := regexp.MustCompile("(^[a-zäüöß]+)|([A-ZÄÜÖ][a-zäüöß,]*)|([0-9,]+)")
+
+	sepBySpecChars := splitAtSpecialChars(filename)
+	parts := []string{}
+	for _, s := range sepBySpecChars {
+		parts = append(parts, splitCamelCaseAndNumbers(s)...)
+	}
+
 	spaceSeparated := strings.Join(parts, " ")
 	return strings.Title(spaceSeparated)
+}
+
+func splitCamelCaseAndNumbers(whole string) []string {
+	rx := regexp.MustCompile("([0-9]+|[A-ZÄÜÖ]?[a-zäüöß]+)")
+	return rx.FindAllString(whole, -1)
+}
+
+func splitAtSpecialChars(whole string) []string {
+	rx := regexp.MustCompile("[^-_ ,.]*")
+	return rx.FindAllString(whole, -1)
 }
 
 func (b *BlogDataAbstractor) findMdFileInAddDir() string {

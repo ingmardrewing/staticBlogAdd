@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"path"
+	"reflect"
 	"runtime"
 	"strconv"
 	"testing"
@@ -21,8 +22,11 @@ func TestMain(m *testing.M) {
 	os.Exit(code)
 }
 func tearDown() {
-	p := path.Join(getTestFileDirPath(), "testResources/src/posts/")
-	fs.RemoveFile(p, "page358.json")
+	pth := path.Join(getTestFileDirPath(), "testResources/src/posts/")
+	filename := "page358.json"
+	if exist, _ := fs.PathExists(path.Join(pth, filename)); exist == true {
+		fs.RemoveFile(pth, filename)
+	}
 	//	fs.RemoveFile(p, "TestImage-w800.png")
 }
 
@@ -42,11 +46,7 @@ func TestGenerateDatePath(t *testing.T) {
 }
 
 func TestBlogDataAbstractor(t *testing.T) {
-	addDir := getTestFileDirPath() + "/testResources/src/add/"
-	postsDir := getTestFileDirPath() + "/testResources/src/posts/"
-	dExcerpt := "A blog containing texts, drawings, graphic narratives/novels and (rarely) code snippets by Ingmar Drewing."
-
-	bda := NewBlogDataAbstractor("drewingde", addDir, postsDir, dExcerpt, "https://drewing.de/blog/")
+	bda := givenBlogDataAbstractor()
 	bda.im = &imgManagerMock{}
 	dto := bda.GeneratePostDto()
 
@@ -84,6 +84,41 @@ func TestBlogDataAbstractor(t *testing.T) {
 	if actualInt != expectedInt {
 		t.Errorf("Expected %d, but got %d\n", expectedInt, actualInt)
 	}
+}
+
+func TestSplitAtSpecialChars(t *testing.T) {
+	expected := []string{"a", "b", "c", "d"}
+	actual := splitAtSpecialChars("a-b,c_d")
+
+	if !reflect.DeepEqual(expected, actual) {
+		t.Error("Expected", expected, "but got", actual)
+	}
+}
+
+func TestSplitCamelCaseAndNumbers(t *testing.T) {
+	expected := []string{"another", "Test", "4", "this"}
+	actual := splitCamelCaseAndNumbers("anotherTest4this")
+
+	if !reflect.DeepEqual(expected, actual) {
+		t.Error("Expected", expected, "but got", actual)
+	}
+}
+
+func TestInferBlogTitleFromFilename(t *testing.T) {
+	bda := givenBlogDataAbstractor()
+
+	filename2expected := map[string]string{
+		"iPadTest.png":       "I Pad Test",
+		"this-is-a-test.png": "This Is A Test",
+		"test_image.png":     "Test Image",
+		"even4me.png":        "Even 4 Me"}
+	for filename, expected := range filename2expected {
+		actual, _ := bda.inferBlogTitleFromFilename(filename)
+		if actual != expected {
+			t.Error("Expected", expected, "but got", actual)
+		}
+	}
+
 }
 
 func TestWriteData(t *testing.T) {
@@ -139,4 +174,16 @@ func (i *imgManagerMock) GetImageUrls() []string {
 }
 func (i *imgManagerMock) AddImageSize(size int) string {
 	return "TestImage-w" + strconv.Itoa(size) + ".png"
+}
+
+func givenBlogDataAbstractor() *BlogDataAbstractor {
+	addDir := getTestFileDirPath() + "/testResources/src/add/"
+	postsDir := getTestFileDirPath() + "/testResources/src/posts/"
+	dExcerpt := "A blog containing texts, drawings, graphic narratives/novels and (rarely) code snippets by Ingmar Drewing."
+
+	return NewBlogDataAbstractor("drewingde",
+		addDir,
+		postsDir,
+		dExcerpt,
+		"https://drewing.de/blog/")
 }
