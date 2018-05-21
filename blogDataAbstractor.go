@@ -169,7 +169,7 @@ func (b *BlogDataAbstractor) inferBlogTitle(filename string) string {
 }
 
 func splitCamelCaseAndNumbers(whole string) []string {
-	rx := regexp.MustCompile("([0-9]+|[A-ZÄÜÖ]?[a-zäüöß]+)")
+	rx := regexp.MustCompile("([0-9]+|[A-ZÄÜÖ]?[a-zäüöß]*)")
 	return rx.FindAllString(whole, -1)
 }
 
