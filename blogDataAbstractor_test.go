@@ -110,6 +110,7 @@ func TestInferBlogTitleFromFilename(t *testing.T) {
 	filename2expected := map[string]string{
 		"iPadTest.png":       "I Pad Test",
 		"this-is-a-test.png": "This Is A Test",
+		"BeeTwoPointO.png":   "Bee Two Point O",
 		"test_image.png":     "Test Image",
 		"even4me.png":        "Even 4 Me"}
 	for filename, expected := range filename2expected {
