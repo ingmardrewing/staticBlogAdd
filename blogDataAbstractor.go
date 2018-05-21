@@ -113,11 +113,11 @@ func (b *BlogDataAbstractor) prepareImages() (string, string, string) {
 func (b *BlogDataAbstractor) generateExcerpt(text string) string {
 	text = b.stripLinksAndImages(text)
 	if len(text) > 155 {
-		return strings.Replace(fmt.Sprintf("%.155s ...", text), `'`, "`", -1)
+		return strings.Replace(fmt.Sprintf("%.155s ...", text), `'`, "’", -1)
 	} else if len(text) == 0 {
 		return b.defaultExcerpt
 	}
-	return strings.Replace(strings.TrimSuffix(text, "\n"), `'`, "`", -1)
+	return strings.Replace(strings.TrimSuffix(text, "\n"), `'`, "’", -1)
 }
 
 func (b *BlogDataAbstractor) generateHtmlFromMarkdown(input string) string {
