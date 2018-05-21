@@ -179,7 +179,7 @@ func splitAtSpecialChars(whole string) []string {
 }
 
 func (b *BlogDataAbstractor) findMdFileInAddDir() string {
-	mds := fs.ReadDirEntriesEndingWith(b.addDir, "md")
+	mds := fs.ReadDirEntriesEndingWith(b.addDir, "md", "txt")
 	for _, md := range mds {
 		return path.Join(b.addDir, md)
 	}
