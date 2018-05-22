@@ -113,11 +113,13 @@ func (b *BlogDataAbstractor) prepareImages() (string, string, string) {
 func (b *BlogDataAbstractor) generateExcerpt(text string) string {
 	text = b.stripLinksAndImages(text)
 	if len(text) > 155 {
-		return strings.Replace(fmt.Sprintf("%.155s ...", text), `'`, "’", -1)
+		txt := fmt.Sprintf("%.155s ...", text)
+		return b.stripQuotes(txt)
 	} else if len(text) == 0 {
 		return b.defaultExcerpt
 	}
-	return strings.Replace(strings.TrimSuffix(text, "\n"), `'`, "’", -1)
+	txt := strings.TrimSuffix(text, "\n")
+	return b.stripQuotes(txt)
 }
 
 func (b *BlogDataAbstractor) generateHtmlFromMarkdown(input string) string {
@@ -125,8 +127,13 @@ func (b *BlogDataAbstractor) generateHtmlFromMarkdown(input string) string {
 	htmlBytes := blackfriday.Run(bytes, blackfriday.WithNoExtensions())
 	htmlString := string(htmlBytes)
 	trimmed := strings.TrimSuffix(htmlString, "\n")
-	escaped := strings.Replace(trimmed, `"`, `\"`, -1)
+	escaped := b.stripQuotes(trimmed)
 	return strings.Replace(escaped, "\n", " ", -1)
+}
+
+func (b *BlogDataAbstractor) stripQuotes(txt string) string {
+	txt = strings.Replace(txt, `'`, `’`, -1)
+	return strings.Replace(txt, `"`, `\"`, -1)
 }
 
 func (b *BlogDataAbstractor) readMdData() (string, string) {
