@@ -43,7 +43,7 @@ func (b *BlogDataAbstractor) GeneratePostDto() staticIntf.PageDto {
 	htmlFilename := "index.html"
 	imageFileName := b.findImageFileInAddDir()
 	title, titlePlain := b.inferBlogTitleFromFilename(imageFileName)
-	thumbUrl, imgUrl, imgHtml := b.prepareImages()
+	microThumbUrl, thumbUrl, imgUrl, imgHtml := b.prepareImages()
 	mdContent, excerpt := b.readMdData()
 	url := b.generateUrl(titlePlain)
 	id := b.getId()
@@ -68,7 +68,8 @@ func (b *BlogDataAbstractor) GeneratePostDto() staticIntf.PageDto {
 		"",
 		htmlFilename,
 		"",
-		category)
+		category,
+		microThumbUrl)
 }
 
 func (b *BlogDataAbstractor) generateDisqusId(id int, titlePlain string) string {
@@ -98,7 +99,8 @@ func (b *BlogDataAbstractor) stripLinksAndImages(text string) string {
 	return rx.ReplaceAllString(text, "")
 }
 
-func (b *BlogDataAbstractor) prepareImages() (string, string, string) {
+func (b *BlogDataAbstractor) prepareImages() (string, string, string, string) {
+	b.im.AddImageSize(190)
 	b.im.AddImageSize(390)
 	b.im.AddImageSize(800)
 	b.im.PrepareImages()
@@ -107,7 +109,7 @@ func (b *BlogDataAbstractor) prepareImages() (string, string, string) {
 	imgUrls := b.im.GetImageUrls()
 	tpl := `<a href=\"%s\"><img src=\"%s\" width=\"800\"></a>`
 	imgHtml := fmt.Sprintf(tpl, imgUrls[2], imgUrls[1])
-	return imgUrls[0], imgUrls[1], imgHtml
+	return imgUrls[2], imgUrls[0], imgUrls[1], imgHtml
 }
 
 func (b *BlogDataAbstractor) generateExcerpt(text string) string {
