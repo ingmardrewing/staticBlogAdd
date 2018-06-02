@@ -23,6 +23,7 @@ func NewBlogDataAbstractor(bucket, addDir, postsDir, defaultExcerpt, domain stri
 	bda.postsDir = postsDir
 	bda.defaultExcerpt = defaultExcerpt
 	bda.domain = domain
+	bda.data = new(abstractData)
 
 	imgFilename := bda.findImageFileInAddDir()
 	imgPath := path.Join(addDir, imgFilename)
@@ -31,45 +32,84 @@ func NewBlogDataAbstractor(bucket, addDir, postsDir, defaultExcerpt, domain stri
 	return bda
 }
 
+type abstractData struct {
+	id            int
+	htmlFilename  string
+	imageFileName string
+	title         string
+	titlePlain    string
+	microThumbUrl string
+	thumbUrl      string
+	imgUrl        string
+	mdContent     string
+	excerpt       string
+	tags          []string
+	url           string
+	disqId        string
+	content       string
+	date          string
+	category      string
+}
+
 type BlogDataAbstractor struct {
+	data           *abstractData
 	domain         string
 	addDir         string
 	postsDir       string
 	defaultExcerpt string
 	im             ImgManager
+	dto            *staticIntf.PageDto
+}
+
+func (b *BlogDataAbstractor) ExtractData() {
+	b.data.htmlFilename = "index.html"
+	b.data.imageFileName = b.findImageFileInAddDir()
+
+	title, titlePlain := b.inferBlogTitleFromFilename(b.data.imageFileName)
+	b.data.title = title
+	b.data.titlePlain = titlePlain
+
+	microThumbUrl, thumbUrl, imgUrl, imgHtml := b.prepareImages()
+	b.data.microThumbUrl = microThumbUrl
+	b.data.thumbUrl = thumbUrl
+	b.data.imgUrl = imgUrl
+
+	mdContent, excerpt, tags := b.readMdData()
+	b.data.mdContent = mdContent
+	b.data.excerpt = excerpt
+	b.data.tags = tags
+	b.data.content = imgHtml + mdContent
+
+	b.data.url = b.generateUrl(titlePlain)
+	b.data.id = b.getId()
+	b.data.disqId = b.generateDisqusId(b.data.id, titlePlain)
+	b.data.date = staticUtil.GetDate()
+	b.data.category = "blog post"
 }
 
 func (b *BlogDataAbstractor) GeneratePostDto() staticIntf.PageDto {
-	htmlFilename := "index.html"
-	imageFileName := b.findImageFileInAddDir()
-	title, titlePlain := b.inferBlogTitleFromFilename(imageFileName)
-	microThumbUrl, thumbUrl, imgUrl, imgHtml := b.prepareImages()
-	mdContent, excerpt := b.readMdData()
-	url := b.generateUrl(titlePlain)
-	id := b.getId()
-	disqId := b.generateDisqusId(id, titlePlain)
-	content := imgHtml + mdContent
-	date := staticUtil.GetDate()
-	category := "blog post"
-
 	return staticPersistence.NewFilledDto(
-		id,
-		title,
-		titlePlain,
-		thumbUrl,
-		imgUrl,
-		excerpt,
-		disqId,
-		date,
-		content,
-		url,
+		b.data.id,
+		b.data.title,
+		b.data.titlePlain,
+		b.data.thumbUrl,
+		b.data.imgUrl,
+		b.data.excerpt,
+		b.data.disqId,
+		b.data.date,
+		b.data.content,
+		b.data.url,
 		b.domain,
 		"",
 		"",
-		htmlFilename,
+		b.data.htmlFilename,
 		"",
-		category,
-		microThumbUrl)
+		b.data.category,
+		b.data.microThumbUrl)
+}
+
+func (b *BlogDataAbstractor) GetTags() []string {
+	return b.data.tags
 }
 
 func (b *BlogDataAbstractor) generateDisqusId(id int, titlePlain string) string {
@@ -133,20 +173,33 @@ func (b *BlogDataAbstractor) generateHtmlFromMarkdown(input string) string {
 	return strings.Replace(escaped, "\n", " ", -1)
 }
 
+// extracts social media hashtags from the given input
+// and returns them as a slice of strings without the leading #
+func (b *BlogDataAbstractor) extractTags(input string) []string {
+	rx := regexp.MustCompile(`#[A-Za-zäüößÄÜÖ]+\b`)
+	matches := rx.FindAllString(input, -1)
+	resultSet := []string{}
+	for _, m := range matches {
+		resultSet = append(resultSet, strings.TrimPrefix(m, "#"))
+	}
+	return resultSet
+}
+
 func (b *BlogDataAbstractor) stripQuotes(txt string) string {
 	txt = strings.Replace(txt, `'`, `’`, -1)
 	return strings.Replace(txt, `"`, `\"`, -1)
 }
 
-func (b *BlogDataAbstractor) readMdData() (string, string) {
+func (b *BlogDataAbstractor) readMdData() (string, string, []string) {
 	pathToMdFile := b.findMdFileInAddDir()
 	if len(pathToMdFile) > 0 {
 		mdData := fs.ReadFileAsString(pathToMdFile)
 		excerpt := b.generateExcerpt(mdData)
 		content := b.generateHtmlFromMarkdown(mdData)
-		return content, excerpt
+		tags := b.extractTags(mdData)
+		return content, excerpt, tags
 	}
-	return "", b.defaultExcerpt
+	return "", b.defaultExcerpt, []string{}
 }
 
 func (b *BlogDataAbstractor) findImageFileInAddDir() string {
@@ -165,8 +218,6 @@ func (b *BlogDataAbstractor) inferBlogTitleFromFilename(filename string) (string
 }
 
 func (b *BlogDataAbstractor) inferBlogTitle(filename string) string {
-	//rx := regexp.MustCompile("(^[a-zäüöß]+)|([A-ZÄÜÖ][a-zäüöß,]*)|([0-9,]+)")
-
 	sepBySpecChars := splitAtSpecialChars(filename)
 	parts := []string{}
 	for _, s := range sepBySpecChars {

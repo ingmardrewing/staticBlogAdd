@@ -48,6 +48,7 @@ func TestGenerateDatePath(t *testing.T) {
 func TestBlogDataAbstractor(t *testing.T) {
 	bda := givenBlogDataAbstractor()
 	bda.im = &imgManagerMock{}
+	bda.ExtractData()
 	dto := bda.GeneratePostDto()
 
 	actual := dto.Title()
@@ -95,6 +96,21 @@ func TestSplitAtSpecialChars(t *testing.T) {
 	}
 }
 
+func TestExtractTagsFromMarkdownText(t *testing.T) {
+	bda := givenBlogDataAbstractor()
+	md := `# this is headline not a tag
+#butthis and #this is`
+
+	actual := bda.extractTags(md)
+	expected := []string{"butthis", "this"}
+
+	for i := 0; i <= 1; i++ {
+		if actual[i] != expected[i] {
+			t.Error("Expected", expected[i], "but got", actual[i], "at index", i)
+		}
+	}
+}
+
 func TestSplitCamelCaseAndNumbers(t *testing.T) {
 	expected := []string{"another", "Test", "4", "this"}
 	actual := splitCamelCaseAndNumbers("anotherTest4this")
@@ -130,6 +146,7 @@ func TestWriteData(t *testing.T) {
 
 	bda := NewBlogDataAbstractor("drewingde", addDir, postsDir, dExcerpt, domain)
 	bda.im = &imgManagerMock{}
+	bda.ExtractData()
 	dto := bda.GeneratePostDto()
 
 	filename := fmt.Sprintf("page%d.json", dto.Id())
@@ -151,7 +168,8 @@ func TestWriteData(t *testing.T) {
 	"content":"<a href=\"https://drewing.de/just/another/path/TestImage.png\"><img src=\"https://drewing.de/just/another/path/TestImage-w800.png\" width=\"800\"></a>",
 	"dsq_thread_id":"%s",
 	"thumbBase64":"%s",
-	"category":"%s"
+	"category":"%s",
+	"microThumbUrl":"https://drewing.de/just/another/path/TestImage.png"
 }`
 	dp := staticUtil.GenerateDatePath()
 	dsq := fmt.Sprintf("%d %s%s", 1000000+dto.Id(), domain, dp+dto.TitlePlain())
