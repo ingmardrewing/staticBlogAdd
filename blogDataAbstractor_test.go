@@ -48,6 +48,7 @@ func TestGenerateDatePath(t *testing.T) {
 func TestBlogDataAbstractor(t *testing.T) {
 	bda := givenBlogDataAbstractor()
 	bda.im = &imgManagerMock{}
+	bda.ExtractData()
 	dto := bda.GeneratePostDto()
 
 	actual := dto.Title()
@@ -101,10 +102,12 @@ func TestExtractTagsFromMarkdownText(t *testing.T) {
 #butthis and #this is`
 
 	actual := bda.extractTags(md)
-	expected := "butthis,this"
+	expected := []string{"butthis", "this"}
 
-	if actual != expected {
-		t.Error("Expected", expected, "but got", actual)
+	for i := 0; i <= 1; i++ {
+		if actual[i] != expected[i] {
+			t.Error("Expected", expected[i], "but got", actual[i], "at index", i)
+		}
 	}
 }
 
@@ -143,6 +146,7 @@ func TestWriteData(t *testing.T) {
 
 	bda := NewBlogDataAbstractor("drewingde", addDir, postsDir, dExcerpt, domain)
 	bda.im = &imgManagerMock{}
+	bda.ExtractData()
 	dto := bda.GeneratePostDto()
 
 	filename := fmt.Sprintf("page%d.json", dto.Id())

@@ -43,7 +43,7 @@ type abstractData struct {
 	imgUrl        string
 	mdContent     string
 	excerpt       string
-	tags          string
+	tags          []string
 	url           string
 	disqId        string
 	content       string
@@ -88,7 +88,6 @@ func (b *BlogDataAbstractor) ExtractData() {
 }
 
 func (b *BlogDataAbstractor) GeneratePostDto() staticIntf.PageDto {
-	b.ExtractData()
 	return staticPersistence.NewFilledDto(
 		b.data.id,
 		b.data.title,
@@ -107,6 +106,10 @@ func (b *BlogDataAbstractor) GeneratePostDto() staticIntf.PageDto {
 		"",
 		b.data.category,
 		b.data.microThumbUrl)
+}
+
+func (b *BlogDataAbstractor) GetTags() []string {
+	return b.data.tags
 }
 
 func (b *BlogDataAbstractor) generateDisqusId(id int, titlePlain string) string {
@@ -171,16 +174,15 @@ func (b *BlogDataAbstractor) generateHtmlFromMarkdown(input string) string {
 }
 
 // extracts social media hashtags from the given input
-// and returns them as a string with a comma separating
-// the tags from oneanother
-func (b *BlogDataAbstractor) extractTags(input string) string {
+// and returns them as a slice of strings without the leading #
+func (b *BlogDataAbstractor) extractTags(input string) []string {
 	rx := regexp.MustCompile(`#[A-Za-zäüößÄÜÖ]+\b`)
 	matches := rx.FindAllString(input, -1)
 	resultSet := []string{}
 	for _, m := range matches {
 		resultSet = append(resultSet, strings.TrimPrefix(m, "#"))
 	}
-	return strings.Join(resultSet, ",")
+	return resultSet
 }
 
 func (b *BlogDataAbstractor) stripQuotes(txt string) string {
@@ -188,7 +190,7 @@ func (b *BlogDataAbstractor) stripQuotes(txt string) string {
 	return strings.Replace(txt, `"`, `\"`, -1)
 }
 
-func (b *BlogDataAbstractor) readMdData() (string, string, string) {
+func (b *BlogDataAbstractor) readMdData() (string, string, []string) {
 	pathToMdFile := b.findMdFileInAddDir()
 	if len(pathToMdFile) > 0 {
 		mdData := fs.ReadFileAsString(pathToMdFile)
@@ -197,7 +199,7 @@ func (b *BlogDataAbstractor) readMdData() (string, string, string) {
 		tags := b.extractTags(mdData)
 		return content, excerpt, tags
 	}
-	return "", b.defaultExcerpt, ""
+	return "", b.defaultExcerpt, []string{}
 }
 
 func (b *BlogDataAbstractor) findImageFileInAddDir() string {
