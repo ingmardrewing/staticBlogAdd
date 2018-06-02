@@ -156,12 +156,16 @@ func (b *BlogDataAbstractor) generateExcerpt(text string) string {
 	text = b.stripLinksAndImages(text)
 	if len(text) > 155 {
 		txt := fmt.Sprintf("%.155s ...", text)
-		return b.stripQuotes(txt)
+		return b.stripQuotes(b.stripNewlines(txt))
 	} else if len(text) == 0 {
 		return b.defaultExcerpt
 	}
 	txt := strings.TrimSuffix(text, "\n")
-	return b.stripQuotes(txt)
+	return b.stripQuotes(b.stripNewlines(txt))
+}
+
+func (b *BlogDataAbstractor) stripNewlines(text string) string {
+	return strings.Replace(text, "\n", " ", -1)
 }
 
 func (b *BlogDataAbstractor) generateHtmlFromMarkdown(input string) string {
