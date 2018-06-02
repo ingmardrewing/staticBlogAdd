@@ -1,6 +1,7 @@
 package staticBlogAdd
 
 import (
+	"log"
 	"strconv"
 	"strings"
 
@@ -67,8 +68,12 @@ func (i *ImageManager) getS3Key(filename string) string {
 
 func (i *ImageManager) GetImageUrls() []string {
 	if !doUpload {
+		log.Println("constructed image paths (not acquired via aws):")
+		log.Println(i.uploadimgagepaths)
 		return i.uploadimgagepaths
 	}
+	log.Println("image paths (acquired via aws):")
+	log.Println(i.awsimageurls)
 	return i.awsimageurls
 }
 

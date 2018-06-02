@@ -169,7 +169,7 @@ func TestWriteData(t *testing.T) {
 	"dsq_thread_id":"%s",
 	"thumbBase64":"%s",
 	"category":"%s",
-	"microThumbUrl":"https://drewing.de/just/another/path/TestImage.png"
+	"microThumbUrl":"https://drewing.de/just/another/path/TestImage-w190.png"
 }`
 	dp := staticUtil.GenerateDatePath()
 	dsq := fmt.Sprintf("%d %s%s", 1000000+dto.Id(), domain, dp+dto.TitlePlain())
@@ -187,6 +187,7 @@ func (i *imgManagerMock) PrepareImages() {}
 func (i *imgManagerMock) UploadImages()  {}
 func (i *imgManagerMock) GetImageUrls() []string {
 	return []string{
+		"https://drewing.de/just/another/path/TestImage-w190.png",
 		"https://drewing.de/just/another/path/TestImage-w390.png",
 		"https://drewing.de/just/another/path/TestImage-w800.png",
 		"https://drewing.de/just/another/path/TestImage.png"}
