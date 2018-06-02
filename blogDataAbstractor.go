@@ -2,6 +2,7 @@ package staticBlogAdd
 
 import (
 	"fmt"
+	"log"
 	"path"
 	"path/filepath"
 	"regexp"
@@ -70,6 +71,9 @@ func (b *BlogDataAbstractor) ExtractData() {
 	b.data.titlePlain = titlePlain
 
 	microThumbUrl, thumbUrl, imgUrl, imgHtml := b.prepareImages()
+	log.Println("XXX-0", microThumbUrl)
+	log.Println("XXX-1", thumbUrl)
+	log.Println("XXX-2", imgUrl)
 	b.data.microThumbUrl = microThumbUrl
 	b.data.thumbUrl = thumbUrl
 	b.data.imgUrl = imgUrl
@@ -148,8 +152,8 @@ func (b *BlogDataAbstractor) prepareImages() (string, string, string, string) {
 
 	imgUrls := b.im.GetImageUrls()
 	tpl := `<a href=\"%s\"><img src=\"%s\" width=\"800\"></a>`
-	imgHtml := fmt.Sprintf(tpl, imgUrls[2], imgUrls[1])
-	return imgUrls[2], imgUrls[0], imgUrls[1], imgHtml
+	imgHtml := fmt.Sprintf(tpl, imgUrls[3], imgUrls[2])
+	return imgUrls[0], imgUrls[1], imgUrls[2], imgHtml
 }
 
 func (b *BlogDataAbstractor) generateExcerpt(text string) string {
