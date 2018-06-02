@@ -33,6 +33,7 @@ func NewBlogDataAbstractor(bucket, addDir, postsDir, defaultExcerpt, domain stri
 }
 
 type abstractData struct {
+	id            int
 	htmlFilename  string
 	imageFileName string
 	title         string
@@ -44,7 +45,6 @@ type abstractData struct {
 	excerpt       string
 	tags          string
 	url           string
-	id            int
 	disqId        string
 	content       string
 	date          string
@@ -61,7 +61,7 @@ type BlogDataAbstractor struct {
 	dto            *staticIntf.PageDto
 }
 
-func (b *BlogDataAbstractor) FillAbstractData() {
+func (b *BlogDataAbstractor) ExtractData() {
 	b.data.htmlFilename = "index.html"
 	b.data.imageFileName = b.findImageFileInAddDir()
 
@@ -88,37 +88,25 @@ func (b *BlogDataAbstractor) FillAbstractData() {
 }
 
 func (b *BlogDataAbstractor) GeneratePostDto() staticIntf.PageDto {
-
-	htmlFilename := "index.html"
-	imageFileName := b.findImageFileInAddDir()
-	title, titlePlain := b.inferBlogTitleFromFilename(imageFileName)
-	microThumbUrl, thumbUrl, imgUrl, imgHtml := b.prepareImages()
-	mdContent, excerpt, _ := b.readMdData()
-	url := b.generateUrl(titlePlain)
-	id := b.getId()
-	disqId := b.generateDisqusId(id, titlePlain)
-	content := imgHtml + mdContent
-	date := staticUtil.GetDate()
-	category := "blog post"
-
+	b.ExtractData()
 	return staticPersistence.NewFilledDto(
-		id,
-		title,
-		titlePlain,
-		thumbUrl,
-		imgUrl,
-		excerpt,
-		disqId,
-		date,
-		content,
-		url,
+		b.data.id,
+		b.data.title,
+		b.data.titlePlain,
+		b.data.thumbUrl,
+		b.data.imgUrl,
+		b.data.excerpt,
+		b.data.disqId,
+		b.data.date,
+		b.data.content,
+		b.data.url,
 		b.domain,
 		"",
 		"",
-		htmlFilename,
+		b.data.htmlFilename,
 		"",
-		category,
-		microThumbUrl)
+		b.data.category,
+		b.data.microThumbUrl)
 }
 
 func (b *BlogDataAbstractor) generateDisqusId(id int, titlePlain string) string {
@@ -186,7 +174,13 @@ func (b *BlogDataAbstractor) generateHtmlFromMarkdown(input string) string {
 // and returns them as a string with a comma separating
 // the tags from oneanother
 func (b *BlogDataAbstractor) extractTags(input string) string {
-	return ""
+	rx := regexp.MustCompile(`#[A-Za-zäüößÄÜÖ]+\b`)
+	matches := rx.FindAllString(input, -1)
+	resultSet := []string{}
+	for _, m := range matches {
+		resultSet = append(resultSet, strings.TrimPrefix(m, "#"))
+	}
+	return strings.Join(resultSet, ",")
 }
 
 func (b *BlogDataAbstractor) stripQuotes(txt string) string {
@@ -222,8 +216,6 @@ func (b *BlogDataAbstractor) inferBlogTitleFromFilename(filename string) (string
 }
 
 func (b *BlogDataAbstractor) inferBlogTitle(filename string) string {
-	//rx := regexp.MustCompile("(^[a-zäüöß]+)|([A-ZÄÜÖ][a-zäüöß,]*)|([0-9,]+)")
-
 	sepBySpecChars := splitAtSpecialChars(filename)
 	parts := []string{}
 	for _, s := range sepBySpecChars {

@@ -95,6 +95,19 @@ func TestSplitAtSpecialChars(t *testing.T) {
 	}
 }
 
+func TestExtractTagsFromMarkdownText(t *testing.T) {
+	bda := givenBlogDataAbstractor()
+	md := `# this is headline not a tag
+#butthis and #this is`
+
+	actual := bda.extractTags(md)
+	expected := "butthis,this"
+
+	if actual != expected {
+		t.Error("Expected", expected, "but got", actual)
+	}
+}
+
 func TestSplitCamelCaseAndNumbers(t *testing.T) {
 	expected := []string{"another", "Test", "4", "this"}
 	actual := splitCamelCaseAndNumbers("anotherTest4this")
