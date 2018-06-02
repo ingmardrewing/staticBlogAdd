@@ -2,7 +2,6 @@ package staticBlogAdd
 
 import (
 	"fmt"
-	"log"
 	"path"
 	"path/filepath"
 	"regexp"
@@ -71,9 +70,6 @@ func (b *BlogDataAbstractor) ExtractData() {
 	b.data.titlePlain = titlePlain
 
 	microThumbUrl, thumbUrl, imgUrl, imgHtml := b.prepareImages()
-	log.Println("XXX-0", microThumbUrl)
-	log.Println("XXX-1", thumbUrl)
-	log.Println("XXX-2", imgUrl)
 	b.data.microThumbUrl = microThumbUrl
 	b.data.thumbUrl = thumbUrl
 	b.data.imgUrl = imgUrl
