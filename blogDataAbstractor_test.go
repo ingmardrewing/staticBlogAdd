@@ -151,7 +151,8 @@ func TestWriteData(t *testing.T) {
 	"content":"<a href=\"https://drewing.de/just/another/path/TestImage.png\"><img src=\"https://drewing.de/just/another/path/TestImage-w800.png\" width=\"800\"></a>",
 	"dsq_thread_id":"%s",
 	"thumbBase64":"%s",
-	"category":"%s"
+	"category":"%s",
+	"microThumbUrl":"https://drewing.de/just/another/path/TestImage.png"
 }`
 	dp := staticUtil.GenerateDatePath()
 	dsq := fmt.Sprintf("%d %s%s", 1000000+dto.Id(), domain, dp+dto.TitlePlain())
