@@ -47,7 +47,7 @@ func (i *ImageManager) PrepareImages() {
 	img := img.NewImgScaler(i.sourceimagepath, imgdir)
 	paths := img.PrepareResizeTo(i.imagesizes...)
 	i.uploadimgagepaths = append(paths, i.sourceimagepath)
-	img.Resize()
+	img.ResizeAndCrop()
 }
 
 func (i *ImageManager) UploadImages() {
