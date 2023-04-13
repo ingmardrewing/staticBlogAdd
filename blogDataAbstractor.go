@@ -14,7 +14,7 @@ import (
 	"github.com/ingmardrewing/staticPersistence"
 	"github.com/ingmardrewing/staticUtil"
 
-	"gopkg.in/russross/blackfriday/v2"
+	"github.com/russross/blackfriday"
 )
 
 func NewBlogDataAbstractor(bucket, addDir, postsDir, defaultExcerpt, domain string) *BlogDataAbstractor {

@@ -1,6 +1,6 @@
 module github.com/ingmardrewing/staticBlogAdd
 
-go 1.20
+go 1.15
 
 require (
 	github.com/aws/aws-sdk-go v1.44.242 // indirect
@@ -11,4 +11,5 @@ require (
 	github.com/ingmardrewing/staticIntf v0.0.3
 	github.com/ingmardrewing/staticPersistence v0.0.3
 	github.com/ingmardrewing/staticUtil v0.0.0-20190224115433-801715c5fec0
+	github.com/russross/blackfriday v1.6.0
 )
